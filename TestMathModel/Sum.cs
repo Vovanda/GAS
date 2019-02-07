@@ -17,17 +17,20 @@ namespace TestMathModel
         public T _<T>(Func<int, T> expression, int count) => _(expression, Enumerable.Range(0, count).ToHashSet());
 
         public T _<T>(Func<int, T> expression, int start, int end) => _(expression, Enumerable.Range(start, end - start).ToHashSet());
+
         public T _<U, T>(Func<U, T> expression, ISet<U> set)
         {
+            var result = default(T);
             if (set.Any())
             {
                 var plus = _plusFunctions[typeof(T)] as Func<T, T, T>;
-                return set.Select(i => expression(i)).Aggregate((a, b) => plus(a, b));
+                foreach(var i in set)
+                {
+                    result = plus(result, expression(i));
+                }               
             }
-            else
-            {
-                return default(T);
-            }
+
+            return result;
         }
 
         private readonly Dictionary<Type, object> _plusFunctions = new Dictionary<Type, object>();
