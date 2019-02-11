@@ -6,12 +6,12 @@ namespace TestMathModel
 {
     internal class Constraints : IConstraints
     {
-        public void Add(Func<IEnumerable<dynamic>, bool> expression, ISet<dynamic>[] sets)
+        public void Add(Func<IEnumerable<double>, bool> expression, ISet<double>[] sets)
         {
-            ISet<IEnumerable<dynamic>> listOfparam = new HashSet<IEnumerable<dynamic>>() { Enumerable.Empty<dynamic>()};
+            ISet<IEnumerable<double>> listOfparam = new HashSet<IEnumerable<double>>() { Enumerable.Empty<double>()};
             for (int i = 0; i < sets.Length; i++)
             {
-                foreach (ISet<dynamic> set in sets)
+                foreach (ISet<double> set in sets)
                 {
                     listOfparam = CartesianProduct(listOfparam, set);
                 }
@@ -39,9 +39,9 @@ namespace TestMathModel
             }
         }
 
-        private ISet<IEnumerable<dynamic>> CartesianProduct(ISet<IEnumerable<dynamic>> set1, ISet<dynamic> set2)
+        private ISet<IEnumerable<double>> CartesianProduct(ISet<IEnumerable<double>> set1, ISet<double> set2)
         {
-            HashSet<IEnumerable<dynamic>> result = new HashSet<IEnumerable<dynamic>>();
+            HashSet<IEnumerable<double>> result = new HashSet<IEnumerable<double>>();
             foreach (var a in set1)
             {
                 foreach (var b in set2)
@@ -52,13 +52,13 @@ namespace TestMathModel
             return result;
         }
 
-        private List<Func<IEnumerable<dynamic>, bool>> _expressions = new List<Func<IEnumerable<dynamic>, bool>>();
-        private Dictionary<int, ISet<IEnumerable<dynamic>>> _results = new Dictionary<int, ISet<IEnumerable<dynamic>>>();
+        private List<Func<IEnumerable<double>, bool>> _expressions = new List<Func<IEnumerable<double>, bool>>();
+        private Dictionary<int, ISet<IEnumerable<double>>> _results = new Dictionary<int, ISet<IEnumerable<double>>>();
     }
 
     public interface IConstraints
     {
-        void Add(Func<IEnumerable<dynamic>, bool> expression, params ISet<dynamic>[] sets);
+        void Add(Func<IEnumerable<double>, bool> expression, params ISet<double>[] sets);
         IEnumerable<IDictionary<string, bool>> Calculate(params int[] idsExpression);
     }
 }

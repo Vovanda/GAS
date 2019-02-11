@@ -6,31 +6,27 @@ namespace TestMathModel
 {
     internal class Sum
     {
-        public Sum SetAdditionFunc<T>(Func<T, T, T> plus)
+        public static double _(Func<int, double> expression, int count) => _(expression, Enumerable.Range(0, count).ToHashSet());
+
+        public static double _(Func<int, double> expression, int start, int end) => _(expression, Enumerable.Range(start, end - start).ToHashSet());
+
+        public static double _(Func<int, double> expression, ISet<int> set)
         {
-            _plusFunctions.Add(typeof(T), plus);
-            return this;
-        }
-
-        public T _<T>(Func<int, T> expression, int count) => _(expression, Enumerable.Range(0, count).ToHashSet());
-
-        public T _<T>(Func<int, T> expression, int start, int end) => _(expression, Enumerable.Range(start, end - start).ToHashSet());
-
-        public T _<U, T>(Func<U, T> expression, ISet<U> set)
-        {
-            var result = default(T);
+            double result = 0;
             if (set.Any())
             {
-                var plus = _plusFunctions[typeof(T)] as Func<T, T, T>;
-                foreach(var i in set)
+                using (var e = set.GetEnumerator())
                 {
-                    result = plus(result, expression(i));
-                }               
+                    checked
+                    {
+                        while (e.MoveNext())
+                        {
+                            result += expression(e.Current);
+                        }
+                    }
+                }
             }
-
             return result;
         }
-
-        private readonly Dictionary<Type, object> _plusFunctions = new Dictionary<Type, object>();
     }
 }
