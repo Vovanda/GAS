@@ -41,7 +41,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\IRandom.cs" />
+    <Compile Include="Common\IRandomExtension.cs" />
     <Compile Include="Common\ParkMillerLCG.cs" />
+    <Compile Include="Common\XORShiftRandom.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\RandomProvider.cs" />
     <Compile Include="Common\Vector.cs" />
