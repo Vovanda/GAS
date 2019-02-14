@@ -7,14 +7,16 @@ using System.Threading.Tasks;
 namespace GAS.Common
 {
     public class XORShiftRandom : IRandom
-    {               
+    {
+        public XORShiftRandom(IRandom lcg_rnd)
+            : this(lcg_rnd.NextUInt(), lcg_rnd.NextUInt(), lcg_rnd.NextUInt(), lcg_rnd.NextUInt()) { }
+
         public XORShiftRandom(uint x, uint y, uint z, uint w)
         {
-            
-        }
-
-        public XORShiftRandom(IRandom lcg_rnd) : this(lcg_rnd.NextUInt(), lcg_rnd.NextUInt(), lcg_rnd.NextUInt(), lcg_rnd.NextUInt())
-        {
+            _x = x;
+            _y = y;
+            _z = z;
+            _w = w;
         }
 
         public double NextDouble()
@@ -56,14 +58,4 @@ namespace GAS.Common
 
         private const double _max_ratio = 1.0 / uint.MaxValue;
     }
-
-//    private static uint x = 548787455, y = 842502087, z = 3579807591, w = 273326509;
-
-//    public static uint XORShift()
-//    {
-//        uint t = x ^ (x << 11);
-//        x = y; y = z; z = w;
-//        return w = w ^ (w >> 19) ^ t ^ (t >> 8);
-//    }
-
 }
