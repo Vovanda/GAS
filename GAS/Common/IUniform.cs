@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GAS.Common
 {
-    public interface IRandom
+    public interface IUniform
     {
         int Next();
         uint NextUInt();

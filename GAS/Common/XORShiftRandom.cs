@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace GAS.Common
 {
-    public class XORShiftRandom : IRandom
+    public class XORShiftRandom : IUniform
     {
-        public XORShiftRandom(IRandom lcg_rnd)
+        public XORShiftRandom(IUniform lcg_rnd)
             : this(lcg_rnd.NextUInt(), lcg_rnd.NextUInt(), lcg_rnd.NextUInt(), lcg_rnd.NextUInt()) { }
 
         public XORShiftRandom(uint x, uint y, uint z, uint w)

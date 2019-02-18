@@ -7,11 +7,11 @@ namespace GAS.Common
     {
         private static long seed = Environment.TickCount;
 
-        private static ThreadLocal<IRandom> randomWrapper = new ThreadLocal<IRandom>(() =>
+        private static ThreadLocal<IUniform> randomWrapper = new ThreadLocal<IUniform>(() =>
             new XORShiftRandom(new ParkMillerLCG((uint)Interlocked.Increment(ref seed)))
         );
 
-        public static IRandom GetThreadRandom()
+        public static IUniform GetThreadRandom()
         {
             return randomWrapper.Value;
         }

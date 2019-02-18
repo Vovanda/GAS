@@ -3,7 +3,7 @@
 namespace GAS.Common
 {
     //RNG
-    public class ParkMillerLCG : IRandom
+    public class ParkMillerLCG : IUniform
     {
         public ParkMillerLCG() : this((uint)Environment.TickCount) { }
 
@@ -34,7 +34,7 @@ namespace GAS.Common
 
             return _state;
         }
-               
+
         public double NextDouble()
         {
             uint div = _state / (_m / _g);
@@ -83,14 +83,15 @@ namespace GAS.Common
             return (float)(_state * _max_ratio);
         }
 
+       
+        
         public double MaxRatio => _max_ratio;
 
-        private uint _state;        
+        private uint _state;
         private const uint _g = 48271;
         private const uint _m = int.MaxValue;
         private const double _max_ratio = 1.0 / int.MaxValue;
         private uint _seed;
-
 
     }
 }

@@ -41,8 +41,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\IRandom.cs" />
-    <Compile Include="Common\IRandomExtension.cs" />
+    <Compile Include="Common\Gauss.cs" />
+    <Compile Include="Common\IUniform.cs" />
+    <Compile Include="Common\IUniformExtension.cs" />
     <Compile Include="Common\ParkMillerLCG.cs" />
     <Compile Include="Common\XORShiftRandom.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
