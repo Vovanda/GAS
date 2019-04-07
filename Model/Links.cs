@@ -4,28 +4,34 @@ using System.Text;
 
 namespace Model
 {
-    internal class Link
+    public class Link
     {
-        public Link(double minCapasity, double maxCapasity) : this(null,  minCapasity,  maxCapasity)
-        {
-
-        }
+        // Объявляем делегат
+        public delegate void IsCalculatedHandler(float value, int id);
+        // Событие, возникающее при окончании расчета расчета потока  
+        public event IsCalculatedHandler FlowIsCalculated;
 
         public Link(GraphNode previousNode, double minCapasity, double maxCapasity) 
         {
-            P
+            PreviousNode = previousNode;
+            PreviousNode.FlowIsCalculated += OnFLowCalculated;
         }
 
-        public GraphNode PreviousNode { get; set; }
-        public float Capacity { get; set; }
+        public void OnFLowCalculated(float value, float share)
+        {
+            //Посылка уведомления о получении значения потока
+            FlowIsCalculated(GetFlow(value,float share), Id);
+        }
+        
+        public GraphNode PreviousNode { get; private set; }
+
+        //relative values [percent/100] 
+        public float Share { get; set; }
+
         public float MinCapasity { get; }
         public float MaxCapasity { get; }
-        public string Id { get; }
-        public float GetFlow()
-        {
-            float result;
-            PreviousNode.GetFlow(MinCapasity, MaxCapasity, out result);
-            return result;
-        }
+
+        public int Id { get; }
+        public float GetFlow(float value, float share) => value * share;
     }
 }
