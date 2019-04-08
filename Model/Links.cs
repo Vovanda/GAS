@@ -17,10 +17,11 @@ namespace Model
             PreviousNode.FlowIsCalculated += OnFLowCalculated;
         }
 
-        public void OnFLowCalculated(float value, float share)
+        public void OnFLowCalculated()
         {
             //Посылка уведомления о получении значения потока
-            FlowIsCalculated(GetFlow(value,float share), Id);
+            FlowIsCalculated(GetFlow(), Id);
+
         }
         
         public GraphNode PreviousNode { get; private set; }
@@ -31,7 +32,7 @@ namespace Model
         public float MinCapasity { get; }
         public float MaxCapasity { get; }
 
-        public int Id { get; }
-        public float GetFlow(float value, float share) => value * share;
+        public int Id { get; set; }
+        public float GetFlow() => PreviousNode.IncomeFlow * PreviousNode.GetLinkShare(Id);
     }
 }

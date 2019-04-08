@@ -1,0 +1,34 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace Model.Tests
+{
+    [TestClass]
+    public class LinearModelTests
+    {
+        [TestMethod]
+        public void DirectDistributionTest()
+        {
+            var nodes = new List<GraphNode>();
+            var links = new List<Link>();
+            int count = 0;
+            for (int i = 0; i <= 10; i++)
+            {
+                var node = new GraphNode(count++);                
+                var link = new Link(node, 0, int.MaxValue) { Id = count++ };
+                if(links.Any())
+                {
+                    node.SetInLink(links.Last());
+                }
+                node.SetOutLink(link);
+                node.UpdateShares(new int []{1});
+                nodes.Add(node);
+            }
+            var lastNode = new GraphNode(count++);
+            lastNode.SetInLink(links.Last());
+            nodes[0].Start(100);
+        }
+    }
+}

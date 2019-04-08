@@ -6,7 +6,7 @@ namespace Model
 {
     public class Pipe : GraphNode
     {
-        public Pipe(string id) : base(id)
+        public Pipe(int id) : base(id)
         {
 
         }

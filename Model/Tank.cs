@@ -6,7 +6,7 @@ namespace Model
 {
     internal class Tank : GraphNode
     {
-        public Tank(string id) : base(id)
+        public Tank(int id) : base(id)
         {
 
         }

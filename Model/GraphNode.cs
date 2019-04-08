@@ -1,40 +1,20 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Model
 {
     public class GraphNode
-    {
-        // Объявляем делегат
-        public delegate void IsCalculatedHandler(float value, float share);
-        // Событие, возникающее при окончании расчета расчета потока  
-        public event IsCalculatedHandler FlowIsCalculated;
+    {        
+        public GraphNode(int id) : this(id, null, null) { }
 
-        //private readonly HashSet<Link> _linksToPeviousNodes = new HashSet<Link>();
-
-        private List<int> _AllIdsLinksToPreNodes = new List<int>();
-
-        private List<int> _NonActiveLinks = new List<int>();
-
-        private readonly Dictionary<int, float> linksValues;
-
-        //relative values
-
-        private readonly List<int> _nextLinksIds = new List<int>();
-        private readonly Dictionary<int, float> _nextLinksShares = new Dictionary<int, float>();
-        
-        public readonly string ID;        
-
-        public GraphNode(string id) : this(id, null, null) { }
-
-        public GraphNode(string id, IEnumerable<Link> linksIn, IEnumerable<Link> linksOut)
+        public GraphNode(int id, IEnumerable<Link> linksIn, IEnumerable<Link> linksOut)
         {
-            linksValues = new Dictionary<int, float>();
-            _AllIdsLinksToPreNodes = new List<int>();
-            _NonActiveLinks = new List<int>();
-            this.ID = id;
+            _idsLinksToPreNodes = new List<int>();
+            _nonActiveIncomeLinks = new List<int>();
+            this.id = id;
             foreach(var inLink in linksIn)
             {
                 SetInLink(inLink);
@@ -42,16 +22,21 @@ namespace Model
 
             foreach (var outLink in linksOut)
             {
-                SetInLink(outLink);
+                SetOutLink(outLink);
             }
+        }
+
+        public void Start(float incomeFlow)
+        {
+            IncomeFlow = incomeFlow;
         }
 
         public void SetInLink(Link link)
         {
-            link.FlowIsCalculated += Link_FlowIsCalculated;
+            link.FlowIsCalculated += Link_FlowIsCalculated; 
                 
-            _AllIdsLinksToPreNodes.Add(link.Id);
-            _NonActiveLinks.Add(link.Id);
+            _idsLinksToPreNodes.Add(link.Id);
+            _nonActiveIncomeLinks.Add(link.Id);
         }
 
         public void SetOutLink(Link link)
@@ -72,17 +57,31 @@ namespace Model
             }
         }
 
+        public float GetLinkShare(int linkId) => _nextLinksShares[linkId] * ReversSharesSum;
+
         public void Link_FlowIsCalculated(float value, int linkId)
         {
-            linksValues[linkId] = value;
-            _NonActiveLinks.Remove(linkId);
-            if (!_NonActiveLinks.Any())
-            {
-                _NonActiveLinks = new List<int>(_AllIdsLinksToPreNodes);
-                //TODO: переписать на просто уведомление
-                FlowIsCalculated(GetFlow(), );
+            _incomeFlow += value;
+            _nonActiveIncomeLinks.Remove(linkId);
+            if (!_nonActiveIncomeLinks.Any())
+            {              
+                ReversSharesSum = 1.0f / _nextLinksShares.Values.Sum();
+                IncomeFlow = _incomeFlow;
+                FlowIsCalculated();
+                Debug.WriteLine($"{id} : {IncomeFlow}");
+                SetDefaultState();  
             }
-        }        
+        }
+        
+        public void SetDefaultState()
+        {
+            _incomeFlow = 0;
+            _nonActiveIncomeLinks = new List<int>(_idsLinksToPreNodes);
+        }
+
+        public delegate void IsCalculatedHandler();
+        
+        public event IsCalculatedHandler FlowIsCalculated;
 
         //relative values [percent/100] 
         public float CapasityIn { get; set; }
@@ -95,14 +94,21 @@ namespace Model
         public float CMinOut { get; set; }
         public float CMaxOut { get; set; }
 
-        public float GetFlow()
-        {
-            throw new NotImplementedException();
-        }
+        public float IncomeFlow { get; private set; }
+        
+        public readonly int id;
 
-        public int Count
-        {
-            get { return this._parents.Count; }
-        }
+        private float ReversSharesSum { get; set; }
+
+        private float _incomeFlow  = 0;
+
+        private List<int> _idsLinksToPreNodes = new List<int>();
+
+        private List<int> _nonActiveIncomeLinks = new List<int>();
+
+        private readonly List<int> _nextLinksIds = new List<int>();
+
+        //relative values
+        private readonly Dictionary<int, float> _nextLinksShares = new Dictionary<int, float>();
     }
 }
