@@ -15,20 +15,29 @@ namespace Model
             _idsLinksToPreNodes = new List<int>();
             _nonActiveIncomeLinks = new List<int>();
             this.id = id;
-            foreach(var inLink in linksIn)
+            if (linksIn != null)
             {
-                SetInLink(inLink);
+                foreach (var inLink in linksIn)
+                {
+                    SetInLink(inLink);
+                }
             }
 
-            foreach (var outLink in linksOut)
+            if (linksOut != null)
             {
-                SetOutLink(outLink);
+                foreach (var outLink in linksOut)
+                {
+                    SetOutLink(outLink);
+                }
             }
         }
 
         public void Start(float incomeFlow)
         {
             IncomeFlow = incomeFlow;
+            ReversSharesSum = 1.0f / _nextLinksShares.Values.Sum();
+            FlowIsCalculated();
+            SetDefaultState();
         }
 
         public void SetInLink(Link link)
@@ -50,7 +59,7 @@ namespace Model
             //TODO: Оптимизировать код
             if(share.Length == _nextLinksIds.Count)
             {
-                for(int i=0; i<= _nextLinksIds.Count; i++ )
+                for(int i=0; i< _nextLinksIds.Count; i++ )
                 {
                     _nextLinksShares[_nextLinksIds[i]] = share[i];
                 }
@@ -64,15 +73,18 @@ namespace Model
             _incomeFlow += value;
             _nonActiveIncomeLinks.Remove(linkId);
             if (!_nonActiveIncomeLinks.Any())
-            {              
-                ReversSharesSum = 1.0f / _nextLinksShares.Values.Sum();
+            {
+                if (_nextLinksShares.Any())
+                {
+                    ReversSharesSum = 1.0f / _nextLinksShares.Values.Sum();
+                }
                 IncomeFlow = _incomeFlow;
-                FlowIsCalculated();
                 Debug.WriteLine($"{id} : {IncomeFlow}");
+                FlowIsCalculated?.Invoke();
                 SetDefaultState();  
             }
         }
-        
+                
         public void SetDefaultState()
         {
             _incomeFlow = 0;

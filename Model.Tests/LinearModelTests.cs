@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Model.Tests
@@ -18,10 +19,12 @@ namespace Model.Tests
             {
                 var node = new GraphNode(count++);                
                 var link = new Link(node, 0, int.MaxValue) { Id = count++ };
-                if(links.Any())
+                
+                if (links.Any())
                 {
                     node.SetInLink(links.Last());
                 }
+                links.Add(link);
                 node.SetOutLink(link);
                 node.UpdateShares(new int []{1});
                 nodes.Add(node);
@@ -29,6 +32,8 @@ namespace Model.Tests
             var lastNode = new GraphNode(count++);
             lastNode.SetInLink(links.Last());
             nodes[0].Start(100);
+            Thread.Sleep(1000);
+            Assert.AreEqual(100, lastNode.IncomeFlow);
         }
     }
 }
