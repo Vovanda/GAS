@@ -15,7 +15,7 @@ namespace Model.Tests
             var nodes = new List<GraphNode>();
             var links = new List<Link>();
             int count = 0;
-            for (int i = 0; i <= 100; i++)
+            for (int i = 0; i <= 4; i++)
             {
                 var node = new GraphNode(count++);                
                 var link = new Link(node, 0, int.MaxValue) { Id = count++ };
@@ -32,7 +32,6 @@ namespace Model.Tests
             var lastNode = new GraphNode(count++);
             lastNode.SetInLink(links.Last());
             nodes[0].Start(100);
-            Thread.Sleep(1000);
             float act = lastNode.GetIncomeByTime(0);
             Assert.AreEqual(100, act);
         }

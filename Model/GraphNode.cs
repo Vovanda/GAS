@@ -14,6 +14,7 @@ namespace Model
 
         public GraphNode(int id, IEnumerable<Link> linksIn, IEnumerable<Link> linksOut)
         {
+            ValueIsExist.Add(false);
             _idsLinksToPreNodes = new List<int>();
             _nonActiveIncomeLinks = new List<int>();
             this.id = id;
@@ -152,13 +153,13 @@ namespace Model
             }
             else
             {
-                waitHandler.WaitOne();
+                bool result = waitHandler.WaitOne();
                 return FlowsAtTime[t];
             }
         }
 
         //relative values
         private readonly Dictionary<int, float> _nextLinksShares = new Dictionary<int, float>();
-        static AutoResetEvent waitHandler = new AutoResetEvent(false);
+        public AutoResetEvent waitHandler = new AutoResetEvent(false);
     }
 }

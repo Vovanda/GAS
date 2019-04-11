@@ -26,7 +26,6 @@ namespace Model
         public GraphNode PreviousNode { get; private set; }
 
         //relative values [percent/100] 
-        public float Share { get; set; }
 
         public float MinCapasity { get; }
         public float MaxCapasity { get; }
