@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Model
 {
@@ -35,9 +37,10 @@ namespace Model
         public void Start(float incomeFlow)
         {
             IncomeFlow = incomeFlow;
+            FlowsAtTime.Add(IncomeFlow);
+            ValueIsExist.Add(true);
             ReversSharesSum = 1.0f / _nextLinksShares.Values.Sum();
-            FlowIsCalculated();
-            SetDefaultState();
+            FlowIsCalculated?.BeginInvoke(CallBack, null);
         }
 
         public void SetInLink(Link link)
@@ -70,6 +73,11 @@ namespace Model
 
         public void Link_FlowIsCalculated(float value, int linkId)
         {
+            if(ValueIsExist.Count <= time)
+            {
+                ValueIsExist.Add(false);
+            }
+
             _incomeFlow += value;
             _nonActiveIncomeLinks.Remove(linkId);
             if (!_nonActiveIncomeLinks.Any())
@@ -79,16 +87,26 @@ namespace Model
                     ReversSharesSum = 1.0f / _nextLinksShares.Values.Sum();
                 }
                 IncomeFlow = _incomeFlow;
+                FlowsAtTime.Add(IncomeFlow);
+                ValueIsExist[time] = true;
+                waitHandler.Set();
                 Debug.WriteLine($"{id} : {IncomeFlow}");
-                FlowIsCalculated?.Invoke();
-                SetDefaultState();  
+                FlowIsCalculated?.BeginInvoke(CallBack, null);
+           
             }
         }
-                
+            
+        public void CallBack(IAsyncResult ar)
+        {
+            SetDefaultState();
+        }
+    
         public void SetDefaultState()
         {
             _incomeFlow = 0;
             _nonActiveIncomeLinks = new List<int>(_idsLinksToPreNodes);
+            ValueIsExist.Add(false);
+            time++;
         }
 
         public delegate void IsCalculatedHandler();
@@ -120,7 +138,27 @@ namespace Model
 
         private readonly List<int> _nextLinksIds = new List<int>();
 
+        private List<bool> ValueIsExist = new List<bool>();
+
+        private int time = 0;
+
+        private List<float> FlowsAtTime = new List<float>();
+
+        public  float GetIncomeByTime(int t)
+        {
+            if(ValueIsExist[t])
+            {
+                return FlowsAtTime[t];
+            }
+            else
+            {
+                waitHandler.WaitOne();
+                return FlowsAtTime[t];
+            }
+        }
+
         //relative values
         private readonly Dictionary<int, float> _nextLinksShares = new Dictionary<int, float>();
+        static AutoResetEvent waitHandler = new AutoResetEvent(false);
     }
 }

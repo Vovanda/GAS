@@ -20,7 +20,7 @@ namespace Model
         public void OnFLowCalculated()
         {
             //Посылка уведомления о получении значения потока
-            FlowIsCalculated?.Invoke(GetFlow(), Id);
+            FlowIsCalculated?.BeginInvoke(GetFlow(), Id, null, null);
         }
         
         public GraphNode PreviousNode { get; private set; }
