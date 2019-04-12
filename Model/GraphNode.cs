@@ -35,13 +35,13 @@ namespace Model
             }
         }
 
-        public void Start(float incomeFlow)
+        public void Start(float incomeFlow, Dictionary<int, float> shares)
         {
             IncomeFlow = incomeFlow;
             FlowsAtTime.Add(IncomeFlow);
             ValueIsExist.Add(true);
             ReversSharesSum = 1.0f / _nextLinksShares.Values.Sum();
-            FlowIsCalculated?.BeginInvoke(CallBack, null);
+            FlowIsCalculated?.BeginInvoke(shares, CallBack, null);
         }
 
         public void SetInLink(Link link)
@@ -58,7 +58,7 @@ namespace Model
             _nextLinksIds.Add(link.Id);
         }
 
-        public void UpdateShares(int[] share)
+        public void UpdateLinksShares(int[] share)
         {
             //TODO: Оптимизировать код
             if(share.Length == _nextLinksIds.Count)
@@ -72,7 +72,7 @@ namespace Model
 
         public float GetLinkShare(int linkId) => _nextLinksShares[linkId] * ReversSharesSum;
 
-        public void Link_FlowIsCalculated(float value, int linkId)
+        public void Link_FlowIsCalculated(float value, int linkId, Dictionary<int, float> shares)
         {
             if(ValueIsExist.Count <= time)
             {
@@ -92,7 +92,7 @@ namespace Model
                 ValueIsExist[time] = true;
                 waitHandler.Set();
                 Debug.WriteLine($"{id} : {IncomeFlow}");
-                FlowIsCalculated?.BeginInvoke(CallBack, null);
+                FlowIsCalculated?.BeginInvoke(shares, CallBack, null);
            
             }
         }
@@ -110,12 +110,12 @@ namespace Model
             time++;
         }
 
-        public delegate void IsCalculatedHandler();
+        public delegate void IsCalculatedHandler(Dictionary<int, float> shares);
         
         public event IsCalculatedHandler FlowIsCalculated;
 
         //relative values [percent/100] 
-        public float CapasityIn { get; set; }
+        //public float CapasityIn { get; set; }
         public float CapasityOut { get; set; }
                 
         //Capasity restriction [ton/hour]
@@ -130,6 +130,8 @@ namespace Model
         public readonly int id;
 
         private float ReversSharesSum { get; set; }
+
+        public float OutputFlow => IncomeFlow * CapasityOut;
 
         private float _incomeFlow  = 0;
 
@@ -157,6 +159,8 @@ namespace Model
                 return FlowsAtTime[t];
             }
         }
+
+        public int OutLinkCount => _nextLinksShares.Count;
 
         //relative values
         private readonly Dictionary<int, float> _nextLinksShares = new Dictionary<int, float>();

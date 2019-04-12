@@ -26,7 +26,7 @@ namespace Model.Tests
                 }
                 links.Add(link);
                 node.SetOutLink(link);
-                node.UpdateShares(new int []{1});
+                node.UpdateLinksShares(new int []{1});
                 nodes.Add(node);
             }
             var lastNode = new GraphNode(count++);

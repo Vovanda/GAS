@@ -7,7 +7,7 @@ namespace Model
     public class Link
     {
         // Объявляем делегат
-        public delegate void IsCalculatedHandler(float value, int id);
+        public delegate void IsCalculatedHandler(float value, int id, Dictionary<int, float> shares);
         // Событие, возникающее при окончании расчета расчета потока  
         public event IsCalculatedHandler FlowIsCalculated;
 
@@ -17,10 +17,10 @@ namespace Model
             PreviousNode.FlowIsCalculated += OnFLowCalculated;
         }
 
-        public void OnFLowCalculated()
+        public void OnFLowCalculated(Dictionary<int, float> shares)
         {
             //Посылка уведомления о получении значения потока
-            FlowIsCalculated?.BeginInvoke(GetFlow(), Id, null, null);
+            FlowIsCalculated?.BeginInvoke(GetFlow(), Id, shares, null, null);
         }
         
         public GraphNode PreviousNode { get; private set; }
@@ -31,6 +31,6 @@ namespace Model
         public float MaxCapasity { get; }
 
         public int Id { get; set; }
-        public float GetFlow() => PreviousNode.IncomeFlow * PreviousNode.GetLinkShare(Id);
+        public float GetFlow() => PreviousNode.OutputFlow * PreviousNode.GetLinkShare(Id);
     }
 }
