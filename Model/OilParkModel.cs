@@ -63,5 +63,8 @@ namespace Model
             }
             return 0;
         }
+
+
+        //TODO: расчет целевой функции
     }
 }
