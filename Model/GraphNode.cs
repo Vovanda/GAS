@@ -77,6 +77,8 @@ namespace Model
 
         public float GetLinkShare(int linkId) => _nextLinksShares[linkId] * ReversSharesSum;
 
+        //TODO: расчет качества
+
         public void Link_FlowIsCalculated(float value, int linkId)
         {
             if(ValueIsExist.Count <= time)
