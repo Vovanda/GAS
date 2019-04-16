@@ -7,30 +7,26 @@ namespace Model
     public class Link
     {
         // Объявляем делегат
-        public delegate void IsCalculatedHandler(float value, int id, Dictionary<int, float> shares);
+        public delegate void IsCalculatedHandler(float value, int id);
         // Событие, возникающее при окончании расчета расчета потока  
         public event IsCalculatedHandler FlowIsCalculated;
 
-        public Link(GraphNode previousNode, double minCapasity, double maxCapasity) 
+        public Link(GraphNode previousNode) 
         {
             PreviousNode = previousNode;
             PreviousNode.FlowIsCalculated += OnFLowCalculated;
         }
 
-        public void OnFLowCalculated(Dictionary<int, float> shares)
+        public void OnFLowCalculated()
         {
             //Посылка уведомления о получении значения потока
-            FlowIsCalculated?.BeginInvoke(GetFlow(), Id, shares, null, null);
+            FlowIsCalculated?.BeginInvoke(GetFlow(), Id, null, null);
         }
         
         public GraphNode PreviousNode { get; private set; }
-
-        //relative values [percent/100] 
-
-        public float MinCapasity { get; }
-        public float MaxCapasity { get; }
-
+               
         public int Id { get; set; }
+        public int NextObjId { get; set; }
         public float GetFlow() => PreviousNode.OutputFlow * PreviousNode.GetLinkShare(Id);
     }
 }

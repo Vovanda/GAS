@@ -20,10 +20,7 @@ namespace Model
             this.id = id;
             if (linksIn != null)
             {
-                foreach (var inLink in linksIn)
-                {
-                    SetInLink(inLink);
-                }
+                SetInLinks(linksIn);
             }
 
             if (linksOut != null)
@@ -41,7 +38,7 @@ namespace Model
             FlowsAtTime.Add(IncomeFlow);
             ValueIsExist.Add(true);
             ReversSharesSum = 1.0f / _nextLinksShares.Values.Sum();
-            FlowIsCalculated?.BeginInvoke(shares, CallBack, null);
+            FlowIsCalculated?.BeginInvoke(CallBack, null);
         }
 
         public void SetInLink(Link link)
@@ -58,6 +55,14 @@ namespace Model
             _nextLinksIds.Add(link.Id);
         }
 
+        internal void SetInLinks(IEnumerable<Link> inputLinks)
+        {
+            foreach(var link in inputLinks)
+            {
+                SetInLink(link);
+            }
+        }
+        
         public void UpdateLinksShares(int[] share)
         {
             //TODO: Оптимизировать код
@@ -72,7 +77,7 @@ namespace Model
 
         public float GetLinkShare(int linkId) => _nextLinksShares[linkId] * ReversSharesSum;
 
-        public void Link_FlowIsCalculated(float value, int linkId, Dictionary<int, float> shares)
+        public void Link_FlowIsCalculated(float value, int linkId)
         {
             if(ValueIsExist.Count <= time)
             {
@@ -92,8 +97,7 @@ namespace Model
                 ValueIsExist[time] = true;
                 waitHandler.Set();
                 Debug.WriteLine($"{id} : {IncomeFlow}");
-                FlowIsCalculated?.BeginInvoke(shares, CallBack, null);
-           
+                FlowIsCalculated?.BeginInvoke(CallBack, null);           
             }
         }
             
@@ -110,7 +114,7 @@ namespace Model
             time++;
         }
 
-        public delegate void IsCalculatedHandler(Dictionary<int, float> shares);
+        public delegate void IsCalculatedHandler();
         
         public event IsCalculatedHandler FlowIsCalculated;
 
@@ -118,17 +122,12 @@ namespace Model
         //public float CapasityIn { get; set; }
         public float CapasityOut { get; set; }
                 
-        //Capasity restriction [ton/hour]
-        public float CMinIn { get; set; }
-        public float CMaxIn  { get; set; }
-
-        public float CMinOut { get; set; }
-        public float CMaxOut { get; set; }
+        public FactoryObjectParam ObjectInfo { get; set; }
 
         public float IncomeFlow { get; private set; }
         
         public readonly int id;
-
+        
         private float ReversSharesSum { get; set; }
 
         public float OutputFlow => IncomeFlow * CapasityOut;

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Model
 {
-    internal class Tank : GraphNode
+    public class Tank : GraphNode
     {
         public Tank(int id) : base(id)
         {
