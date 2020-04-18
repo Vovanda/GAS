@@ -1,36 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
-namespace Model
+namespace OilParkSM
 {
-    public class FactoryObjectParam
+    //FactoryObjectParam
+    public class FOParam
     {
-        public FactoryObjectType Type { get; set; }
-        //Capasity restriction [ton/hour]
-        public float CMinIn { get; set; }
-        public float CMaxIn { get; set; }
+        public FOParam(FOType type)
+        {
+            Type = type;
+        }
 
-        public float CMinOut { get; set; }
-        public float CMaxOut { get; set; }
+        public float MassBegin;
 
-        public float MinMass { get; set; }
+        public Dictionary<string, float> QualityBegin;
 
-        public float StartMass { get; set; }
+        public readonly FOType Type;
 
-        //public float MaxLevel { get; set; }
+        public Сonstraint Mass;
 
-        HashSet<int> UnavailableTime { get; set; }
+        public Сonstraint FlowRateIn;
 
-        public Dictionary<string, float> QualityStart { get; set; }
-
-        public int qualityTimeSplits = 50;
-        
+        public Сonstraint FlowRateOut;
+                
+        public HashSet<int> UnavailableTime;       
     }
 
-    public enum FactoryObjectType
+    //FactoryObjectType
+    public enum FOType
     {
         Tank,
         Pipe
+    }
+
+    public struct Сonstraint
+    {
+        float Min;
+        float Max;
     }
 }

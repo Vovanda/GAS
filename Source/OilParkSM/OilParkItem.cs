@@ -1,54 +1,58 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
-namespace Model
+namespace OilParkSM
 {
-    internal class GraphNode
+    internal class OilParkItem
     {
-        public GraphNode(int id, FactoryObjectParam param, int times)
+        public OilParkItem(int id, FOParam param, int times)
         {
             Id = id;
             ObjectInfo = param;
-            _nextNodes = new List<GraphNode>();
+            _nextItems = new List<OilParkItem>();
             _incomes = new List<float>[times];
             _outcome = new float[times];
             _mass = new float[(times + 1)];
-            _mass[0] = param.StartMass;
+            _mass[0] = param.MassBegin;
+
             for (int i=0; i < times; i++)
             {
                 _incomes[i] = new List<float>();
             }
+
             _times = times;
             Quality = new Dictionary<string, float[][]>();
             foreach(var qualityName in OilParkModel.Qualitys)
             {               
                 Quality[qualityName] = new float[times + 1][];
-                var qualityValue = param.QualityStart != null ? param.QualityStart[qualityName] : 0;
-                Quality[qualityName][0] = Enumerable.Repeat(qualityValue, param.qualityTimeSplits).ToArray(); 
+                var qualityValue = param.QualityBegin != null ? param.QualityBegin[qualityName] : 0;
+                Quality[qualityName][0] = Enumerable.Repeat(qualityValue, OilParkModel.QualityTimeSplits).ToArray(); 
                 for(int i = 1; i < times+1; i++)
                 {
-                    Quality[qualityName][i] = new float[param.qualityTimeSplits];
+                    Quality[qualityName][i] = new float[OilParkModel.QualityTimeSplits];
                 }
             }
         }
 
-        internal void AddNextNode(GraphNode node) => _nextNodes.Add(node);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void AddNextItem(OilParkItem Item)
+        {
+            _nextItems.Add(Item);
+            Item.PreItemsCountInc();
+        }
 
-        internal void AddNextNodes(IEnumerable<GraphNode> nodes) => _nextNodes.AddRange(nodes);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal IList<OilParkItem> GetNextItems() => _nextItems;
 
-        internal List<GraphNode> GetNextNodes() => _nextNodes;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal OilParkItem GetNextItem(int idx) => _nextItems[idx];
 
-        internal GraphNode GetNextNode(int idx) => _nextNodes[idx];
+        internal int NextItemsCount => _nextItems.Count;
 
-        internal int NextNodesCount => _nextNodes.Count;
+        internal FOParam ObjectInfo { get; }
 
-        internal FactoryObjectParam ObjectInfo { get; }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void AddIncome(int time, float income, Dictionary<string, float[]> quality)
         {            
             if (_qualityIncomes == null)
@@ -59,7 +63,7 @@ namespace Model
             {
                 foreach(var qualityName in OilParkModel.Qualitys)
                 {
-                    for (int i = 0; i < ObjectInfo.qualityTimeSplits; i++)
+                    for (int i = 0; i < OilParkModel.QualityTimeSplits; i++)
                     {
                         float Qvalue = _qualityIncomes[qualityName][i];
                         _qualityIncomes[qualityName][i] = (Qvalue * Income(time) + quality[qualityName][i] * income) / (Income(time) + income);
@@ -69,6 +73,7 @@ namespace Model
             _incomes[time].Add(income);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void SetOutcome(int time, float outcomeValue)
         {  
             _outcome[time] = outcomeValue;
@@ -76,7 +81,7 @@ namespace Model
             float massOnTime = _mass[time];
             _mass[time+1] = massOnTime + (incomeOnTime - outcomeValue) * timeSpan;
 
-            float timeRange = timeSpan / ObjectInfo.qualityTimeSplits;
+            float timeRange = timeSpan / OilParkModel.QualityTimeSplits;
 
             float addedMass = (incomeOnTime - outcomeValue) * timeRange;
             float massIncome = incomeOnTime * timeRange;
@@ -84,8 +89,8 @@ namespace Model
             {
                 foreach (var qualityName in OilParkModel.Qualitys)
                 {
-                    float Qvalue = Quality[qualityName][time][ObjectInfo.qualityTimeSplits - 1];
-                    for (int i = 0; i < ObjectInfo.qualityTimeSplits; i++)
+                    float Qvalue = Quality[qualityName][time][OilParkModel.QualityTimeSplits - 1];
+                    for (int i = 0; i < OilParkModel.QualityTimeSplits; i++)
                     {
                         Quality[qualityName][time + 1][i] = (Qvalue * massOnTime + _qualityIncomes[qualityName][i] * massIncome) / (massOnTime + massIncome);
                         Qvalue = Quality[qualityName][time + 1][i];
@@ -95,22 +100,35 @@ namespace Model
             }
         }
 
-        internal bool NodeActive(int time) => _preNodesCount == _incomes[time].Count;
+        internal bool ItemActive(int time) => _preItemsCount == _incomes[time].Count;
 
-        internal void PreNodesCountInc() => _preNodesCount++;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void PreItemsCountInc() => _preItemsCount++;
 
-        internal float Income(int time) => _incomes[time].Sum();
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal float Income(int time)
+        {
+            float result = 0;
+            for (int i = 0; i < _incomes[time].Count; i++)
+            {
+                result += _incomes[time][i];
+            }
+            return result;
+        }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal float GetMassOnEndTime(int time)
         {
             return _mass[time];
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void UpdateState()
         {
             _qualityIncomes = null;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void Clear()
         {
             for (int t = 0; t < _times; t++)
@@ -125,13 +143,13 @@ namespace Model
 
         internal Dictionary<string, float[][]> Quality { get; set; }
 
-        private List<GraphNode> _nextNodes;
+        private IList<OilParkItem> _nextItems;
             
-        private int _preNodesCount = 0;
+        private int _preItemsCount = 0;
      
-        private Dictionary<string, float[]> _qualityIncomes;
+        private IDictionary<string, float[]> _qualityIncomes;
         
-        private List<float>[] _incomes;
+        private IList<float>[] _incomes;
 
         private float[] _outcome;
 

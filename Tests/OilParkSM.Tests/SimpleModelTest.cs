@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Model.Tests
+namespace OilParkSM.Tests
 {
     [TestClass]
     public class SimpleModelTest
@@ -22,17 +22,17 @@ namespace Model.Tests
             var thirdSourceQuality = new Dictionary<string, float>() { { "ОЧ", 93 }, { "Плотность", 0.86f } }; ;
 
 
-            var linksMap = new (List<int> NextObjList, FactoryObjectParam Params, float[] FlowValues, Dictionary<string , float> Quality)[9]
+            var linksMap = new (FOParam ItemParams, int[] NextObjectsIdx, float[] FlowValues, Dictionary<string , float> Quality)[9]
             {
-                (new List<int>() { 3 }, new FactoryObjectParam(){Type = FactoryObjectType.Pipe }, new [] { 10f, 10f, 0f }, firstSourseQuality),
-                (new List<int>() { 3 }, new FactoryObjectParam(){Type = FactoryObjectType.Pipe }, new [] { 10f, 10f, 0f }, secondSourseQuality),
-                (new List<int>() { 4 }, new FactoryObjectParam(){Type = FactoryObjectType.Pipe }, new [] { 0f, 0f, 10f }, thirdSourceQuality),
-                (new List<int>() { 5 }, new FactoryObjectParam(){Type = FactoryObjectType.Tank }, null, null),
-                (new List<int>() { 6 }, new FactoryObjectParam(){Type = FactoryObjectType.Tank }, null, null),
-                (new List<int>() { 7 }, new FactoryObjectParam(){Type = FactoryObjectType.Pipe }, null, null),
-                (new List<int>() { 7 }, new FactoryObjectParam(){Type = FactoryObjectType.Pipe }, null, null),
-                (new List<int>() { 8 }, new FactoryObjectParam(){Type = FactoryObjectType.Pipe }, null, null),
-                (new List<int>(), new FactoryObjectParam(){Type = FactoryObjectType.Tank }, null, null),
+                 (new FOParam(FOType.Pipe), new [] { 3 }, new [] { 10f, 10f, 0f }, firstSourseQuality),
+                 (new FOParam(FOType.Pipe), new [] { 3 }, new [] { 10f, 10f, 0f }, secondSourseQuality),
+                 (new FOParam(FOType.Pipe), new [] { 4 }, new [] { 0f, 0f, 10f }, thirdSourceQuality),
+                 (new FOParam(FOType.Tank), new [] { 5 }, null, null),
+                 (new FOParam(FOType.Tank), new [] { 6 }, null, null),
+                 (new FOParam(FOType.Pipe), new [] { 7 }, null, null),
+                 (new FOParam(FOType.Pipe), new [] { 7 }, null, null),
+                 (new FOParam(FOType.Pipe), new [] { 8 }, null, null),
+                 (new FOParam(FOType.Tank), new int[0] ,  null, null),
             };
 
             OilParkModel model = new OilParkModel(linksMap, 3);
