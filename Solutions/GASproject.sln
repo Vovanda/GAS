@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp", "..\Source\Con
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GAS", "..\Source\GAS\GAS.csproj", "{B063C5FD-43CF-44E5-91D3-883F8A0F8452}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OilParkSM", "..\Source\OilParkSM\OilParkSM.csproj", "{343DF9CE-E088-40B9-A922-7720E22295FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OilParkSM.Tests", "..\Tests\OilParkSM.Tests\OilParkSM.Tests.csproj", "{1736716E-FD93-4E1E-967F-9730599DC696}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{B063C5FD-43CF-44E5-91D3-883F8A0F8452}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B063C5FD-43CF-44E5-91D3-883F8A0F8452}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B063C5FD-43CF-44E5-91D3-883F8A0F8452}.Release|Any CPU.Build.0 = Release|Any CPU
+		{343DF9CE-E088-40B9-A922-7720E22295FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{343DF9CE-E088-40B9-A922-7720E22295FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{343DF9CE-E088-40B9-A922-7720E22295FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{343DF9CE-E088-40B9-A922-7720E22295FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1736716E-FD93-4E1E-967F-9730599DC696}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1736716E-FD93-4E1E-967F-9730599DC696}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1736716E-FD93-4E1E-967F-9730599DC696}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1736716E-FD93-4E1E-967F-9730599DC696}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
